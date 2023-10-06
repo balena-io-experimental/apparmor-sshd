@@ -1,0 +1,73 @@
+#include <tunables/global>
+
+/usr/sbin/sshd {
+  # include basic system-wide abstractions
+  # that provide generic read access to system files
+  # and necessary libs.
+  # It's necessary to ensure basic functionality
+  include <abstractions/base>
+
+  capability setuid,
+  capability setgid,
+  capability sys_chroot,
+
+  # allow basic networking operations
+  network inet stream,
+  network inet6 stream,
+
+  # sshd-specific paths
+  /etc/ssh/ssh_host_*_key r,
+  /etc/ssh/ssh_config r,
+  /etc/ssh/sshd_config r,
+  /etc/ssh/sshd_config_development r,
+  /etc/ssh/hostkeys/** r,
+  /var/run/sshd/** r,
+  /bin/ r,
+  /usr/sbin/sshd ix,
+
+  # SSL paths
+  /etc/ssl/openssl.cnf r,
+
+  # Terminal access
+  /dev/ ix,
+  /dev/null rw,
+  /dev/tty rw,
+  /dev/ptmx rw,
+  /dev/pts rw,
+  /dev/pts/1 rw,
+
+  # Running bash
+  /etc/profile r,
+  /etc/profile.d/ r,
+  /etc/profile.d/*** r,
+  /bin/bash.bash ix,
+  /usr/bin/less.less ix,
+  /lib/*** r,
+  /etc/ld.so.cache r,
+  /usr/bin/jq ix,
+  /mnt/boot/config.json r,
+  /etc/terminfo/*** r,
+  /usr/bin/tty.coreutils ix,
+  /etc/inputrc r,
+
+  # Misc file access in temporary filesystems
+  /run/ r,
+  /run/** rwk,
+  /var/ r,
+  /var/volatile r,
+  /var/volatile/** r,
+
+  # Only allow read access to journald logs
+  /bin/journalctl ix,
+  /etc/machine-id r,
+  /proc/sys/kernel/random/boot_id r,
+  /var/log/journal/ r,
+  /var/log/journal/** r,
+
+  # Needed for authentication
+  /etc/nsswitch.conf r,
+  /etc/passwd r,
+  /etc/group r,
+  /etc/shadow r,
+}
+
